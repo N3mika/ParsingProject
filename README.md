@@ -42,7 +42,6 @@ The `UD_depd` column contains the output of syntactic dependency tagging for eac
   {"ID": 1, "FORM": "él", "LEMMA": "él", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "empezó", "DEPREL": "nsubj"},
   {"ID": 2, "FORM": "empezó", "LEMMA": "empezar", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
   {"ID": 3, "FORM": "a", "LEMMA": "a", "UPOS": "PART", "HEAD ID": 4, "HEAD": "trabajar", "DEPREL": "mark"},
-  ...
 ]
 ```
 Each token dictionary includes:
