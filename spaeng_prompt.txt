@@ -34,82 +34,104 @@ Discourse and Pragmatic Elements:
 
 Tagging Guidelines:
 
-Given a Spanish-English code-switched sentence, tag each token using Universal Dependencies-style annotation with the following fields:
+Given a Spanish-English code-switched sentence, tag each token with the following fields, using Universal Dependencies-style annotation conventions:
 
-- ID: The token index in the sentence, starting from 1.
-- FORM: The surface form of the token.
-- LEMMA: The base form of the token.
-- UPOS: The Universal POS tag (e.g., VERB, NOUN, ADJ).
-- HEAD ID: ID of the token’s syntactic head.
-- HEAD: FORM of the head token.
-- DEPREL: Dependency relation to the head.
+- "ID" (number): The index of the token in the sentence, starting from 1.
+- "FORM" (string): The surface form of the word as it appears in the sentence.
+- "LEMMA" (string): The base or dictionary form of the word (e.g., infinitive for verbs, singular for nouns).
+- "UPOS" (string): The Universal Part-of-Speech tag (e.g., VERB, NOUN, ADJ).
+- "HEAD ID" (number): The ID of the token’s syntactic head.
+- "HEAD" (string): The FORM of the head token.
+- "DEPREL" (string): The dependency relation linking the token to its head (e.g., nsubj, obj, root, aux, cc).
 
-1. Only one root per sentence.
-2. Contractions:
-   Example: "She didn't go ."
-   [
-     {"ID": 1, "FORM": "She", "LEMMA": "she", "UPOS": "PRON", "HEAD ID": 3, "HEAD": "go", "DEPREL": "nsubj"},
-     {"ID": 2, "FORM": "did", "LEMMA": "do", "UPOS": "AUX", "HEAD ID": 3, "HEAD": "go", "DEPREL": "aux"},
-     {"ID": 2, "FORM": "n't", "LEMMA": "not", "UPOS": "PART", "HEAD ID": 2, "HEAD": "did", "DEPREL": "advmod"},
-     {"ID": 3, "FORM": "go", "LEMMA": "go", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
-     {"ID": 4, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 3, "HEAD": "go", "DEPREL": "punct"}
-   ]
+Please follow these additional guidelines:
+
+1. Only one root per sentence. Only one token may have "HEAD ID": 0, and that should be the syntactic root of the sentence. Any additional finite verbs should be connected using conj, parataxis, or similar relations.
+
+2. Contractions: When a token appears as a contraction (e.g., "wasn't", "they're", "can't"), split the contraction into two rows sharing the same "ID" and "FORM", but with different lemmas and syntactic roles.
+
+Example – Sentence: "She didn't go ."
+
+Output:
+[
+  {"ID": 1, "FORM": "She", "LEMMA": "she", "UPOS": "PRON", "HEAD ID": 3, "HEAD": "go", "DEPREL": "nsubj"},
+  {"ID": 2, "FORM": "did", "LEMMA": "do", "UPOS": "AUX", "HEAD ID": 3, "HEAD": "go", "DEPREL": "aux"},
+  {"ID": 2, "FORM": "n't", "LEMMA": "not", "UPOS": "PART", "HEAD ID": 2, "HEAD": "did", "DEPREL": "advmod"},
+  {"ID": 3, "FORM": "go", "LEMMA": "go", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
+  {"ID": 4, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 3, "HEAD": "go", "DEPREL": "punct"}
+]
 
 3. Repetition:
-   Example: "Yo yo no sé ."
-   [
-     {"ID": 1, "FORM": "Yo", "LEMMA": "yo", "UPOS": "PRON", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "nsubj"},
-     {"ID": 2, "FORM": "yo", "LEMMA": "yo", "UPOS": "PRON", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "nsubj"},
-     {"ID": 3, "FORM": "no", "LEMMA": "no", "UPOS": "PART", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "advmod"},
-     {"ID": 4, "FORM": "sé", "LEMMA": "saber", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
-     {"ID": 5, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "punct"}
-   ]
+   - If a word is repeated due to hesitation or repair (e.g., "yo yo no sé"), assign the same dependency label and head to both repeated tokens.
+
+Example – Sentence: "Yo yo no sé ."
+
+Output:
+[
+  {"ID": 1, "FORM": "Yo", "LEMMA": "yo", "UPOS": "PRON", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "nsubj"},
+  {"ID": 2, "FORM": "yo", "LEMMA": "yo", "UPOS": "PRON", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "nsubj"},
+  {"ID": 3, "FORM": "no", "LEMMA": "no", "UPOS": "PART", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "advmod"},
+  {"ID": 4, "FORM": "sé", "LEMMA": "saber", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
+  {"ID": 5, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 4, "HEAD": "sé", "DEPREL": "punct"}
+]
 
 4. Incomplete Sentences or Ellipses:
-   Example: "It's the end of the ."
-   [
-     {"ID": 1, "FORM": "It", "LEMMA": "it", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "'s", "DEPREL": "nsubj"},
-     {"ID": 2, "FORM": "'s", "LEMMA": "be", "UPOS": "AUX", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
-     {"ID": 3, "FORM": "the", "LEMMA": "the", "UPOS": "DET", "HEAD ID": 4, "HEAD": "end", "DEPREL": "det"},
-     {"ID": 4, "FORM": "end", "LEMMA": "end", "UPOS": "NOUN", "HEAD ID": 2, "HEAD": "'s", "DEPREL": "attr"},
-     {"ID": 5, "FORM": "of", "LEMMA": "of", "UPOS": "ADP", "HEAD ID": 4, "HEAD": "end", "DEPREL": "case"},
-     {"ID": 6, "FORM": "the", "LEMMA": "the", "UPOS": "DET", "HEAD ID": "_", "HEAD": "_", "DEPREL": "dep"},
-     {"ID": 7, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 2, "HEAD": "'s", "DEPREL": "punct"}
-   ]
+   - Grammatically incomplete sentence (e.g., "It's the end of the") → tag known words and assign dep or use _ in HEAD fields where no head exists.
+   - Elliptical constructions (e.g., "Me gusta comer y a ella bailar") → use orphan to attach a promoted dependent.
 
-   Example: "Me gusta comer y a ella bailar ."
-   [
-     {"ID": 1, "FORM": "Me", "LEMMA": "yo", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "iobj"},
-     {"ID": 2, "FORM": "gusta", "LEMMA": "gustar", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
-     {"ID": 3, "FORM": "comer", "LEMMA": "comer", "UPOS": "VERB", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "xcomp"},
-     {"ID": 4, "FORM": "y", "LEMMA": "y", "UPOS": "CCONJ", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "cc"},
-     {"ID": 5, "FORM": "a", "LEMMA": "a", "UPOS": "ADP", "HEAD ID": 6, "HEAD": "ella", "DEPREL": "case"},
-     {"ID": 6, "FORM": "ella", "LEMMA": "ella", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "conj"},
-     {"ID": 7, "FORM": "bailar", "LEMMA": "bailar", "UPOS": "VERB", "HEAD ID": 6, "HEAD": "ella", "DEPREL": "orphan"},
-     {"ID": 8, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "punct"}
-   ]
+Example – Sentence: "It's the end of the ."
 
-5. Full Example – Sentence: "and if you're not doing quality work para qué te van a pagar ?"
-   [
-     {"ID": 1, "FORM": "and", "LEMMA": "and", "UPOS": "CCONJ", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "cc"},
-     {"ID": 2, "FORM": "if", "LEMMA": "if", "UPOS": "SCONJ", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "mark"},
-     {"ID": 3, "FORM": "you", "LEMMA": "you", "UPOS": "PRON", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "nsubj"},
-     {"ID": 3, "FORM": "'re", "LEMMA": "be", "UPOS": "AUX", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "aux"},
-     {"ID": 4, "FORM": "not", "LEMMA": "not", "UPOS": "PART", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "advmod"},
-     {"ID": 5, "FORM": "doing", "LEMMA": "do", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
-     {"ID": 6, "FORM": "quality", "LEMMA": "quality", "UPOS": "ADJ", "HEAD ID": 8, "HEAD": "work", "DEPREL": "amod"},
-     {"ID": 7, "FORM": "work", "LEMMA": "work", "UPOS": "NOUN", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "obj"},
-     {"ID": 8, "FORM": "para", "LEMMA": "para", "UPOS": "ADP", "HEAD ID": 10, "HEAD": "qué", "DEPREL": "case"},
-     {"ID": 9, "FORM": "qué", "LEMMA": "qué", "UPOS": "PRON", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "obj"},
-     {"ID": 10, "FORM": "te", "LEMMA": "tú", "UPOS": "PRON", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "iobj"},
-     {"ID": 11, "FORM": "van", "LEMMA": "ir", "UPOS": "AUX", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "aux"},
-     {"ID": 12, "FORM": "a", "LEMMA": "a", "UPOS": "PART", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "mark"},
-     {"ID": 13, "FORM": "pagar", "LEMMA": "pagar", "UPOS": "VERB", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "advcl"},
-     {"ID": 14, "FORM": "?", "LEMMA": "?", "UPOS": "PUNCT", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "punct"}
-   ]
+Output:
+[
+  {"ID": 1, "FORM": "It", "LEMMA": "it", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "'s", "DEPREL": "nsubj"},
+  {"ID": 2, "FORM": "'s", "LEMMA": "be", "UPOS": "AUX", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
+  {"ID": 3, "FORM": "the", "LEMMA": "the", "UPOS": "DET", "HEAD ID": 4, "HEAD": "end", "DEPREL": "det"},
+  {"ID": 4, "FORM": "end", "LEMMA": "end", "UPOS": "NOUN", "HEAD ID": 2, "HEAD": "'s", "DEPREL": "attr"},
+  {"ID": 5, "FORM": "of", "LEMMA": "of", "UPOS": "ADP", "HEAD ID": 4, "HEAD": "end", "DEPREL": "case"},
+  {"ID": 6, "FORM": "the", "LEMMA": "the", "UPOS": "DET", "HEAD ID": "_", "HEAD": "_", "DEPREL": "dep"},
+  {"ID": 7, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 2, "HEAD": "'s", "DEPREL": "punct"}
+]
 
-Reminders:
-- Every token (including emojis, filler words, punctuation) must be tagged.
-- `HEAD ID` must match an existing ID.
-- `HEAD` must match the FORM of the referenced head token.
-- Punctuation must be attached to the syntactic root of the clause.
+Example – Sentence: "Me gusta comer y a ella bailar ."
+
+Output:
+[
+  {"ID": 1, "FORM": "Me", "LEMMA": "yo", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "iobj"},
+  {"ID": 2, "FORM": "gusta", "LEMMA": "gustar", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
+  {"ID": 3, "FORM": "comer", "LEMMA": "comer", "UPOS": "VERB", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "xcomp"},
+  {"ID": 4, "FORM": "y", "LEMMA": "y", "UPOS": "CCONJ", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "cc"},
+  {"ID": 5, "FORM": "a", "LEMMA": "a", "UPOS": "ADP", "HEAD ID": 6, "HEAD": "ella", "DEPREL": "case"},
+  {"ID": 6, "FORM": "ella", "LEMMA": "ella", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "conj"},
+  {"ID": 7, "FORM": "bailar", "LEMMA": "bailar", "UPOS": "VERB", "HEAD ID": 6, "HEAD": "ella", "DEPREL": "orphan"},
+  {"ID": 8, "FORM": ".", "LEMMA": ".", "UPOS": "PUNCT", "HEAD ID": 2, "HEAD": "gusta", "DEPREL": "punct"}
+]
+
+Final Reminders:
+- HEAD ID values must match the correct ID of the referenced head token.
+- The FORM in the "HEAD" field must exactly match the FORM of the token referenced by the HEAD ID.
+- Every token in the sentence (including punctuation) must be included in the output.
+- Always use the punct relation to attach punctuation (e.g., ., ?, !) to the main clause verb or root.
+- Do not omit any token — even emojis, filler words, or interjections should be annotated with "UPOS": "other" and "DEPREL": "discourse" or similar where appropriate.
+
+Example – Sentence: "and if you're not doing quality work para qué te van a pagar ?"
+
+Output:
+[
+  {"ID": 1, "FORM": "and", "LEMMA": "and", "UPOS": "CCONJ", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "cc"},
+  {"ID": 2, "FORM": "if", "LEMMA": "if", "UPOS": "SCONJ", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "mark"},
+  {"ID": 3, "FORM": "you", "LEMMA": "you", "UPOS": "PRON", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "nsubj"},
+  {"ID": 3, "FORM": "'re", "LEMMA": "be", "UPOS": "AUX", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "aux"},
+  {"ID": 4, "FORM": "not", "LEMMA": "not", "UPOS": "PART", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "advmod"},
+  {"ID": 5, "FORM": "doing", "LEMMA": "do", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
+  {"ID": 6, "FORM": "quality", "LEMMA": "quality", "UPOS": "ADJ", "HEAD ID": 8, "HEAD": "work", "DEPREL": "amod"},
+  {"ID": 7, "FORM": "work", "LEMMA": "work", "UPOS": "NOUN", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "obj"},
+  {"ID": 8, "FORM": "para", "LEMMA": "para", "UPOS": "ADP", "HEAD ID": 10, "HEAD": "qué", "DEPREL": "case"},
+  {"ID": 9, "FORM": "qué", "LEMMA": "qué", "UPOS": "PRON", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "obj"},
+  {"ID": 10, "FORM": "te", "LEMMA": "tú", "UPOS": "PRON", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "iobj"},
+  {"ID": 11, "FORM": "van", "LEMMA": "ir", "UPOS": "AUX", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "aux"},
+  {"ID": 12, "FORM": "a", "LEMMA": "a", "UPOS": "PART", "HEAD ID": 14, "HEAD": "pagar", "DEPREL": "mark"},
+  {"ID": 13, "FORM": "pagar", "LEMMA": "pagar", "UPOS": "VERB", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "advcl"},
+  {"ID": 14, "FORM": "?", "LEMMA": "?", "UPOS": "PUNCT", "HEAD ID": 6, "HEAD": "doing", "DEPREL": "punct"}
+]
+
+Sentence:
