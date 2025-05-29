@@ -1,0 +1,107 @@
+Definitions and further instructions for applicable Dependency tags for Spanish:
+
+Core Syntactic Relations:
+- nsubj: Nominal subject – The syntactic subject of a clause.
+- obj: Object – The direct object of a verb.
+- iobj: Indirect object – A secondary object, often marked with a preposition.
+- csubj: Clausal subject – A clause functioning as the subject of another clause.
+- ccomp: Clausal complement – A clause functioning as the object of a verb.
+- xcomp: Open clausal complement – A non-finite clause that shares its subject with the main verb.
+
+Modifiers and Complements:
+- amod: Adjectival modifier – An adjective modifying a noun.
+- nmod: Nominal modifier – A noun phrase modifying another noun, often introduced by a preposition.
+- advmod: Adverbial modifier – An adverb modifying a verb, adjective, or other adverb.
+- obl: Oblique nominal – A nominal dependent introduced by a preposition.
+- vocative: Vocative – A noun used for direct address.
+
+Function Words and Connectors:
+- det: Determiner – An article or quantifier modifying a noun.
+- case: Case marking – A preposition or postposition introducing a nominal.
+- mark: Marker – A subordinating conjunction introducing a clause.
+- cc: Coordinating conjunction – A word that connects two coordinated elements.
+- conj: Conjunct – An element in a coordination.
+
+Structure and Function Management:
+- cop: Copula – A linking verb (typically "ser" or "estar").
+- aux: Auxiliary – An auxiliary verb used to form tense, aspect, or mood.
+- punct: Punctuation – Punctuation marks.
+
+Discourse and Pragmatic Elements:
+- discourse: Discourse element – Words or phrases used to structure discourse (e.g., "pues", "bueno").
+- parataxis: Parataxis – Loosely connected clauses or phrases.
+- dislocated: Dislocated element – Preposed or postposed element related anaphorically to the clause.
+
+---
+
+Tagging Instructions:
+
+Given a Spanish-Guarani code-switched sentence, tag each token with the following fields, following Universal Dependencies-style conventions:
+
+- "ID": The index of the token in the sentence, starting from 1.
+- "FORM": The surface form of the word as it appears in the sentence.
+- "LEMMA": The base or dictionary form of the token.
+- "UPOS": The Universal POS tag (e.g., VERB, NOUN, ADJ).
+- "HEAD ID": The ID of the token’s syntactic head.
+- "HEAD": The FORM of the head token.
+- "DEPREL": The dependency relation to the head.
+
+Additional Guidelines:
+- Only one token should have `"HEAD ID": 0`, which marks the syntactic root.
+- If other verbs behave like main verbs, attach them using `conj`, `parataxis`, or `advcl`.
+
+Example – Sentence: "Leave me and stay away from me"
+→ "Leave" is root, "stay" is `conj`, not another root.
+
+Final Reminders:
+- HEAD ID must match the ID of a token in the sentence.
+- The HEAD string must match the FORM of the referenced token.
+- Every token — including punctuation, interjections, and emojis — must be annotated.
+- Use `"UPOS": "other"` and `DEPREL: discourse` or `other` for emojis or fillers.
+- Punctuation should be attached using `punct`, usually to the root verb.
+
+---
+
+Example 1:
+Sentence: "Mba’e sentido oreko las olimpiadas sin basket 😭"
+
+[
+  {"ID": 1, "FORM": "Mba’e", "LEMMA": "Mba’e", "UPOS": "PRON", "HEAD ID": 2, "HEAD": "sentido", "DEPREL": "det"},
+  {"ID": 2, "FORM": "sentido", "LEMMA": "sentido", "UPOS": "NOUN", "HEAD ID": 3, "HEAD": "oreko", "DEPREL": "nsubj"},
+  {"ID": 3, "FORM": "oreko", "LEMMA": "oreko", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
+  {"ID": 4, "FORM": "las", "LEMMA": "el", "UPOS": "DET", "HEAD ID": 5, "HEAD": "olimpiadas", "DEPREL": "det"},
+  {"ID": 5, "FORM": "olimpiadas", "LEMMA": "olimpiada", "UPOS": "NOUN", "HEAD ID": 3, "HEAD": "oreko", "DEPREL": "obj"},
+  {"ID": 6, "FORM": "sin", "LEMMA": "sin", "UPOS": "ADP", "HEAD ID": 7, "HEAD": "basket", "DEPREL": "case"},
+  {"ID": 7, "FORM": "basket", "LEMMA": "basket", "UPOS": "NOUN", "HEAD ID": 3, "HEAD": "oreko", "DEPREL": "obl"},
+  {"ID": 8, "FORM": "😭", "LEMMA": "😭", "UPOS": "other", "HEAD ID": 0, "HEAD": "other", "DEPREL": "other"}
+]
+
+---
+
+Example 2:
+Sentence: "Calmate nde ridicula , cuida de tu novio mba’e pq está siendo comidita del pueblo y ni cuenta gua’u te das 🌝"
+
+[
+  {"ID": 1, "FORM": "Calmate", "LEMMA": "calmar", "UPOS": "VERB", "HEAD ID": 0, "HEAD": "root", "DEPREL": "root"},
+  {"ID": 2, "FORM": "nde", "LEMMA": "nde", "UPOS": "PRON", "HEAD ID": 3, "HEAD": "ridicula", "DEPREL": "det"},
+  {"ID": 3, "FORM": "ridicula", "LEMMA": "ridiculo", "UPOS": "ADJ", "HEAD ID": 1, "HEAD": "Calmate", "DEPREL": "vocative"},
+  {"ID": 4, "FORM": ",", "LEMMA": ",", "UPOS": "PUNCT", "HEAD ID": 1, "HEAD": "Calmate", "DEPREL": "punct"},
+  {"ID": 5, "FORM": "cuida", "LEMMA": "cuidar", "UPOS": "VERB", "HEAD ID": 1, "HEAD": "Calmate", "DEPREL": "parataxis"},
+  {"ID": 6, "FORM": "de", "LEMMA": "de", "UPOS": "ADP", "HEAD ID": 8, "HEAD": "novio", "DEPREL": "case"},
+  {"ID": 7, "FORM": "tu", "LEMMA": "tu", "UPOS": "DET", "HEAD ID": 8, "HEAD": "novio", "DEPREL": "det"},
+  {"ID": 8, "FORM": "novio", "LEMMA": "novio", "UPOS": "NOUN", "HEAD ID": 5, "HEAD": "cuida", "DEPREL": "obl"},
+  {"ID": 9, "FORM": "mba’e", "LEMMA": "mba’e", "UPOS": "PRON", "HEAD ID": 5, "HEAD": "cuida", "DEPREL": "discourse"},
+  {"ID": 10, "FORM": "pq", "LEMMA": "porque", "UPOS": "SCONJ", "HEAD ID": 13, "HEAD": "está", "DEPREL": "mark"},
+  {"ID": 11, "FORM": "está", "LEMMA": "estar", "UPOS": "AUX", "HEAD ID": 5, "HEAD": "cuida", "DEPREL": "advcl"},
+  {"ID": 12, "FORM": "siendo", "LEMMA": "ser", "UPOS": "AUX", "HEAD ID": 13, "HEAD": "comidita", "DEPREL": "aux"},
+  {"ID": 13, "FORM": "comidita", "LEMMA": "comidita", "UPOS": "NOUN", "HEAD ID": 11, "HEAD": "está", "DEPREL": "xcomp"},
+  {"ID": 14, "FORM": "del", "LEMMA": "de+el", "UPOS": "ADP", "HEAD ID": 15, "HEAD": "pueblo", "DEPREL": "case"},
+  {"ID": 15, "FORM": "pueblo", "LEMMA": "pueblo", "UPOS": "NOUN", "HEAD ID": 13, "HEAD": "comidita", "DEPREL": "nmod"},
+  {"ID": 16, "FORM": "y", "LEMMA": "y", "UPOS": "CCONJ", "HEAD ID": 21, "HEAD": "das", "DEPREL": "cc"},
+  {"ID": 17, "FORM": "ni", "LEMMA": "ni", "UPOS": "CCONJ", "HEAD ID": 18, "HEAD": "cuenta", "DEPREL": "cc"},
+  {"ID": 18, "FORM": "cuenta", "LEMMA": "cuenta", "UPOS": "NOUN", "HEAD ID": 21, "HEAD": "das", "DEPREL": "obj"},
+  {"ID": 19, "FORM": "gua’u", "LEMMA": "gua’u", "UPOS": "ADV", "HEAD ID": 21, "HEAD": "das", "DEPREL": "advmod"},
+  {"ID": 20, "FORM": "te", "LEMMA": "tú", "UPOS": "PRON", "HEAD ID": 21, "HEAD": "das", "DEPREL": "iobj"},
+  {"ID": 21, "FORM": "das", "LEMMA": "dar", "UPOS": "VERB", "HEAD ID": 5, "HEAD": "cuida", "DEPREL": "conj"},
+  {"ID": 22, "FORM": "🌝", "LEMMA": "🌝", "UPOS": "other", "HEAD ID": 0, "HEAD": "other", "DEPREL": "other"}
+]
